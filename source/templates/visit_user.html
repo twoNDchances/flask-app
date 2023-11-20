@@ -1,0 +1,215 @@
+{% extends 'content.html' %}
+
+{% block title %}
+    <title>
+        {{ user.username }}'s Profile Page - KnOwner
+    </title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <hr>
+        <strong><h1>Profile of {{ user.username }}</h1></strong>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <div style="overflow:hidden; height:150px; width:150px; border-radius:50%; margin: auto; max-width: fit-content">
+                            <img src="../{{ user.avatar.image[26:] }}" alt="Avatar" class="img-fluid">
+                        </div>
+                    </header>
+                    <div class="card-body h-100">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="text-right"><strong>Uploaded:</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-left">{{ number }} {{ status }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-right"><strong>Gender:</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-left">{{ user.gender }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-right"><strong>Address:</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-left">{{ user.address }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-right"><strong>Career:</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-left">{{ user.career }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <h4 class="card-title mt-2">About {{ user.username }}</h4>
+                    </header>
+                    <div class="card-body h-100">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">First Name:</th>
+                                <td>{{ user.first_name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Last Name:</th>
+                                <td>{{ user.last_name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Username:</th>
+                                <td><a href="{{ url_for('visit.user.visituser', username=user.username, show=show) }}">{{ user.username }}</a></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Email:</th>
+                                {% if user.rule.email_rule %}
+                                    <td>{{ user.phone }}</td>
+                                {% else %}
+                                    <td><img src="../static/Server/resources/home/feature/blind.png" alt="Hidden" height="20px" width="20px"></td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <th scope="row">Phone:</th>
+                                {% if user.rule.phone_rule %}
+                                    <td>{{ user.phone }}</td>
+                                {% else %}
+                                    <td><img src="../static/Server/resources/home/feature/blind.png" alt="Hidden" height="20px" width="20px"></td>
+                                {% endif %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h1 id="book">
+            Books of {{ user.username }}
+        </h1>
+        <hr>
+        <div class="card-header">
+            <div class="btn-group" role="group" aria-label="Second group">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link disabled">Show:</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}#book">Card</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('visit.user.visituser', username=user.username, show='table') }}#book">Table</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        {% if books.__len__() > 0 %}
+            {% if show in ['card', 'library'] %}
+                <div class="row row-cols-1 row-cols-md-3">
+                    {% for book in books %}
+                        <div class="col mb-4">
+                            <div class="card h-100">
+                                <img style="height: 300px; object-fit: cover" src="../{{ book.image.path[26:] }}" class="card-img-top" alt="{{ book.title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ book.title }}</h5>
+                                    <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <td>Author:</td>
+                                                <td>{{ book.author }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Release Year:</td>
+                                                <td>{{ book.release_year }}</td>
+                                            </tr>   
+                                            <tr>
+                                                <td>Posted by:</td>
+                                                <td><a href="{{ url_for('visit.user.visituser', username=user.username, show=show) }}">{{ user.username }}</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <a href="{{ url_for('visit.book.visitbook', username=user.username, key=encrypt(book.key, user.key)) }}" class="btn btn-primary">View</a>
+                                </div>
+                                <div class="card-footer">
+                                    {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                        <small class="text-muted">Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</small>
+                                    {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                        <small class="text-muted">Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</small>
+                                    {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                        <small class="text-muted">Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</small>
+                                    {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                        <small class="text-muted">Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</small>
+                                    {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                        <small class="text-muted">Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</small>
+                                    {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                        <small class="text-muted">Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if show in ['list', 'table'] %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cover</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Author</th>
+                        <th scope="col">Posted by</th>
+                        <th scope="col">Release year</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Option</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <th scope="row"><a href="{{ url_for('visit.book.visitbook', username=user.username, key=encrypt(book.key, user.key)) }}"><img src="../{{ book.image.path[26:] }}" alt="Image of book" style="width: 70px; object-fit: cover;"></a></th>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td><a href="{{ url_for('visit.user.visituser', username=user.username, show=show) }}">{{ user.username }}</a></td>
+                        <td>{{ book.release_year }}</td>
+                        <td>
+                            {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                <p>Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</p>
+                            {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                <p>Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</p>
+                            {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                <p>Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</p>
+                            {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                <p>Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</p>
+                            {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                <p>Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</p>
+                            {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                <p>Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</p>
+                            {% endif %}
+                        </td>
+                        <td>
+                        <a href="{{ url_for('visit.book.visitbook', username=user.username, key=encrypt(book.key, user.key)) }}"><img
+                            height="20px" width="20px" src="../static/Server/resources/book/view.png" alt="View button"></a>
+                        </td>
+                    </tr>
+                    {% endfor%}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% else %}
+            <div class="text-center">
+                <h3 class="display-5 text-secondary">{{ user.username }} have no books yet!</h3>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

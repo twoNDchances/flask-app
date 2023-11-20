@@ -1,0 +1,120 @@
+{% extends 'content.html' %}
+{% block title %}
+    <title>
+        Update Page - KnOwner
+    </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+{% endblock %}
+
+{% block body %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Profile of {{ current_user.username }}</h1>
+            <p class="lead">Your profile looks awesome.</p>
+        </div>
+    </div>
+    <div class="container">
+        <hr>
+        <form method="POST" enctype="multipart/form-data" id="myForm">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <header class="card-header">
+                            <div style="margin: auto; max-width: fit-content">
+                                <br>
+                                {{ form.file.label }} {{ form.file }}
+                                {% for error in form.file.errors %}
+                                    <p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                                <br>
+                                <br>
+                            </div>
+                        </header>
+                        <div class="card-body h-100">
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">{{ form.gender.label }}: <span>{{ form.gender }}</span></li>
+                                    </ul>
+                                </div>
+                                <div class="col form-group">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">{{ form.address.label }}: <span class="font-weight-bold">{{ form.address(class="form-control") }}</span></li>
+                                        <li class="list-group-item">{{ form.career.label }}: <span class="font-weight-bold">{{ form.career(class="form-control") }}</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <header class="card-header">
+                            <h4 class="card-title mt-2">Seeable</h4>
+                            <small class="form-text text-muted">
+                                Edit viewing permissions
+                            </small>
+                        </header>
+                        <div class="card-body h-100">
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    {{ form.phone_rule.label }}:
+                                    {{ form.phone_rule }}
+                                </div>
+                                <div class="col form-group">
+                                    {{ form.email_rule.label }}:
+                                    {{ form.email_rule }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <header class="card-header">
+                            {{ form.submit_button(class="float-right btn btn-outline-primary mt-1") }}
+                            <h4 class="card-title mt-2">Edit me</h4>
+                            <small class="form-text text-muted">
+                                Leave blank the fields you don't want to update.
+                            </small>
+                        </header>
+                        <div class="card-body h-100">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">{{ form.first_name.label }}: <span class="font-weight-bold">{{ form.first_name(class="form-control") }}</span></li>
+                                <li class="list-group-item">{{ form.last_name.label }}: <span class="font-weight-bold">{{ form.last_name(class="form-control") }}</span></li>
+                                <li class="list-group-item">{{ form.username.label }}: <span class="font-weight-bold">{{ form.username(class="form-control") }}</span></li>
+                                {% if username_alert %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ username_alert }}
+                                    </div>
+                                {% endif %}
+                                {% for error in form.username.errors %}
+                                	<p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                                <li class="list-group-item">{{ form.email.label }}: <span class="font-weight-bold">{{ form.email(class="form-control") }}</span></li>
+                                {% if email_alert %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ email_alert }}
+                                    </div>
+                                {% endif %}
+                                {% for error in form.email.errors %}
+                                    <p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                                <li class="list-group-item">{{ form.phone.label }}: <span class="font-weight-bold">{{ form.phone(class="form-control") }}</span></li>
+                                {% if phone_alert %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ phone_alert }}
+                                    </div>
+                                {% endif %}
+                                {% for error in form.phone.errors %}
+                                	<p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                                <li class="list-group-item">{{ form.password.label }}: <span class="font-weight-bold">{{ form.password(class="form-control") }}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr>
+    </div>
+{% endblock %}

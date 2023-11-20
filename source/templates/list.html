@@ -1,0 +1,72 @@
+{% extends 'content.html' %}
+{% block title %}
+<title>
+  List Page - KnOwner
+</title>
+{% endblock %}
+
+{% block body %}
+<!-- <div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Welcome to your Library Management, {{ current_user.username }}!</h1>
+    <p class="lead">This is your library in table form.</p>
+  </div>
+</div> -->
+<div class="container">
+  <hr>
+  <div class="card-header">
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+      <div class="btn-group" role="group" aria-label="First group">
+        <a class="btn btn-link" href="{{ url_for('list.list.library', page=1) }}">Your library</a>
+        <a class="btn btn-link" href="{{ url_for('list.list.list') }}">List table</a>
+      </div>
+      <div class="input-group">
+        <a class="btn btn-primary" href="{{ url_for('create.add.add') }}">Add more</a>
+      </div>
+    </div>
+  </div>
+  <hr>
+</div>
+<div class="container">
+  {% if is_empty %}
+  <div class="text-center">
+    <h3 class="display-5 text-secondary">You have no books in your library!</h3>
+  </div>
+  {% else %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">No</th>
+        <th scope="col">Cover</th>
+        <th scope="col">Author</th>
+        <th scope="col">Release</th>
+        <th scope="col">Title</th>
+        <th scope="col">Option</th>
+        <th scope="col">More</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for book in books %}
+      <tr>
+        <th scope="row">{{ books.index(book) + 1 }}</th>
+        <td><img src="{{ book.image.path[26:] }}" alt="" style="width: 70px; object-fit: cover;"></td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.release_year }}</td>
+        <td>{{ book.title }}</td>
+        <td>
+          <a href="{{ url_for('show.showbook.view', key=encrypt(book.key, encryption_key)) }}"><img height="20px"
+              width="20px" src="../static/Server/resources/book/view.png" alt="View button"></a>
+          <a href="{{ url_for('update.updatebook.update_for_book', key=encrypt(book.key, encryption_key)) }}"><img
+              height="20px" width="20px" src="../static/Server/resources/book/update.png" alt="Update button"></a>
+        </td>
+        <td>
+          <a href="{{ url_for('delete.delete.delete_list', key=encrypt((book.key + 'l'), encryption_key)) }}"><img
+              height="20px" width="20px" src="../static/Server/resources/book/delete.png" alt="Delete button"></a>
+        </td>
+      </tr>
+      {% endfor%}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

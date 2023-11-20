@@ -1,0 +1,51 @@
+{% extends 'content.html' %}
+{% block title %}
+    <title>
+        Login Page - KnOwner
+    </title>
+{% endblock %}
+
+{% block body %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">Login to your Knowledge :)</h1>
+        <p class="lead">Access anytime, anywhere!</p>
+      </div>
+    </div>
+    <div class="container">
+        <hr>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <a href="{{ url_for('register.register') }}" class="float-right btn btn-outline-primary mt-1">Register</a>
+                        <h4 class="card-title mt-2">Login</h4>
+                    </header>
+                    <article class="card-body">
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form.username.label }}
+                                {{ form.username(class="form-control") }}
+                            </div> <!-- form-group end.// -->
+                            <div class="form-group">
+                                {{ form.password.label }}
+                                {{ form.password(class="form-control") }}
+                            </div> <!-- form-group end.// -->
+                            {% for message in get_flashed_messages() %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                            <div class="form-group">
+                                {{ form.submit_button(class="btn btn-primary btn-block") }}
+                            </div> <!-- form-group// -->
+                        </form>
+                    </article> <!-- card-body end .// -->
+                    <div class="border-top card-body text-center">Don't have account? <a href="{{ url_for('register.register') }}">Register</a></div>
+                </div> <!-- card.// -->
+            </div> <!-- col.//-->
+        </div> <!-- row.//-->
+        <hr>
+    </div>
+{% endblock %}

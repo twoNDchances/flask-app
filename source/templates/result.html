@@ -1,0 +1,330 @@
+{% extends 'content.html' %}
+
+{% block title %}
+    <title>
+        Search Page - KnOwner
+    </title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <br>
+        <table style="margin: auto; max-width: fit-content;">
+            <tr>
+                <td>
+                    <h4>
+                        Results for
+                    </h4>
+                </td>
+                <td></td>
+                <td>
+                    <h4 style="color: red;">
+                        "{{ keyword }}"
+                    </h4>
+                </td>
+                <td>
+                    <h4>: <small>{{ results.__len__() }} found</small></h4>
+                </td>
+            </tr>
+        </table>
+        <div class="card-header">
+            <div class="justify-content-center">
+                
+            </div>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active disabled">Book</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='username', sort='increase') }}">User</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <ul class="nav justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Filter option:</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter='title', sort=sort, show=show) }}">Title</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter='author', sort=sort, show=show) }}">Author</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter='release_year', sort=sort, show=show) }}">Release year</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Second group">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Show:</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter=filter, sort=sort, show='card') }}">Card</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter=filter, sort=sort, show='table') }}">Table</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <ul class="nav justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Sort:</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter=filter, sort='increase', show=show) }}">Increase</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter=filter, sort='decrease', show=show) }}">Decrease</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% if show == 'card' %}
+            <br>
+            {% if results.__len__() == 0 %}
+                <div class="text-center">
+                    {% if filter in ['release_year', 'releaseyear', 'release year'] %}
+                        <h3 class="display-5 text-secondary">No result for release year filter</h3>
+                    {% else %}
+                        <h3 class="display-5 text-secondary">No result for {{ filter }} filter</h3>
+                    {% endif %}
+                </div>
+            {% else %}
+                {% if self_found.__len__() > 0 %}
+                    <h4>Yours:</h4>
+                    <div class="row row-cols-1 row-cols-md-3">
+                        {% for book in self_found %}
+                            <div class="col mb-4">
+                                <div class="card h-100">
+                                    <img style="height: 300px; object-fit: cover" src="../{{ book.image.path[26:] }}" class="card-img-top" alt="{{ book.title }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ book.title }}</h5>
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Author:</td>
+                                                    <td>{{ book.author }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Release Year:</td>
+                                                    <td>{{ book.release_year }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Posted by:</td>
+                                                    <td><a href="{{ url_for('show.showuser.profile', username=session['username']) }}">{{ user(book.user_id).username }}</a></td>
+                                                </tr> 
+                                            </tbody>
+                                        </table>
+                                        <a href="{{ url_for('show.showbook.view', key=encrypt(book.key, encryption_key)) }}" class="btn btn-primary">View</a>
+                                        <a href="{{ url_for('update.updatebook.update_for_book', key=encrypt(book.key, encryption_key), keyword=keyword, filter=filter, sort=sort, show=show)}}" class="btn btn-success">Update</a>
+                                        <a href="{{ url_for('delete.delete.delete_card', key=encrypt(('s' + book.key + 'c'), encryption_key), keyword=keyword, filter=filter, sort=sort, show=show) }}" class="btn btn-danger">Delete</a>
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</small>
+                                        {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</small>
+                                        {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                            <small class="text-muted">Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</small>
+                                        {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</small>
+                                        {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</small>
+                                        {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <hr>
+                {% if other_found.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <div class="row row-cols-1 row-cols-md-3">
+                        {% for book in other_found %}
+                            <div class="col mb-4">
+                                <div class="card h-100">
+                                    <img style="height: 300px; object-fit: cover" src="../{{ book.image.path[26:] }}" class="card-img-top" alt="{{ book.title }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ book.title }}</h5>
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Author:</td>
+                                                    <td>{{ book.author }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Release Year:</td>
+                                                    <td>{{ book.release_year }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Posted by:</td>
+                                                    <td><a href="{{ url_for('visit.user.visituser', username=user(book.user_id).username, show='card') }}">{{ user(book.user_id).username }}</a></td>
+                                                </tr> 
+                                            </tbody>
+                                        </table>
+                                        <a href="{{ url_for('visit.book.visitbook', username=user(book.user_id).username, key=encrypt(book.key, user(book.user_id).key)) }}" class="btn btn-primary">View</a>
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</small>
+                                        {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</small>
+                                        {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                            <small class="text-muted">Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</small>
+                                        {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</small>
+                                        {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</small>
+                                        {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                            <small class="text-muted">Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% elif show == 'table' %}
+            <br>
+            {% if results.__len__() == 0 %}
+                <div class="text-center">
+                    {% if filter in ['release_year', 'releaseyear', 'release year'] %}
+                        <h3 class="display-5 text-secondary">No result for release year filter</h3>
+                    {% else %}
+                        <h3 class="display-5 text-secondary">No result for {{ filter }} filter</h3>
+                    {% endif %}
+                </div>
+            {% else %}
+                {% if self_found.__len__() > 0 %}
+                    <h4>Yours:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Cover image</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Author</th>
+                                <th scope="col">Release year</th>
+                                <th scope="col">Posted by</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">Option</th>
+                                <th scope="col">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in self_found %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showbook.view', key=encrypt(book.key, encryption_key)) }}"><img src="../{{ book.image.path[26:] }}" alt="Image of book" style="width: 70px; object-fit: cover;"></a>
+                                    </td>
+                                    <td>
+                                        {{ book.title }}
+                                    </td>
+                                    <td>
+                                        {{ book.author }}
+                                    </td>
+                                    <td>
+                                        {{ book.release_year }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=session['username']) }}">{{ user(book.user_id).username }}</a>
+                                    </td>
+                                    <td>
+                                        {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                            <p>Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</p>
+                                        {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                            <p>Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</p>
+                                        {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                            <p>Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</p>
+                                        {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                            <p>Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</p>
+                                        {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                            <p>Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</p>
+                                        {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                            <p>Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</p>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showbook.view', key=encrypt(book.key, encryption_key)) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px" width="20px"></a>
+                                        <a href="{{ url_for('update.updatebook.update_for_book', key=encrypt(book.key, encryption_key), keyword=keyword, filter=filter, sort=sort, show=show)}}"><img src="../static/Server/resources/book/update.png" alt="Update button" height="20px" width="20px"></a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('delete.delete.delete_list', key=encrypt(('s' + book.key + 'l'), encryption_key), keyword=keyword, filter=filter, sort=sort, show=show) }}"><img src="../static/Server/resources/book/delete.png" alt="Delete button" height="20px" width="20px"></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if other_found.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Cover image</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Author</th>
+                                <th scope="col">Release year</th>
+                                <th scope="col">Posted by</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in other_found %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('visit.book.visitbook', username=user(book.user_id).username, key=encrypt(book.key, user(book.user_id).key)) }}"><img src="../{{ book.image.path[26:] }}" alt="Image of book" style="width: 70px; object-fit: cover;"></a>
+                                    </td>
+                                    <td>
+                                        {{ book.title }}
+                                    </td>
+                                    <td>
+                                        {{ book.author }}
+                                    </td>
+                                    <td>
+                                        {{ book.release_year }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user(book.user_id).username, show='card') }}">{{ user(book.user_id).username }}</a>
+                                    </td>
+                                    <td>
+                                        {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                            <p>Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</p>
+                                        {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                            <p>Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</p>
+                                        {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                            <p>Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</p>
+                                        {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                            <p>Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</p>
+                                        {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                            <p>Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</p>
+                                        {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                            <p>Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</p>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.book.visitbook', username=user(book.user_id).username, key=encrypt(book.key, user(book.user_id).key)) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px" width="20px"></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

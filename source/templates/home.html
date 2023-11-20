@@ -1,0 +1,130 @@
+{% extends 'content.html' %}
+{% block title %}
+<title>
+    Home Page - KnOwner
+</title>
+{% endblock %}
+
+{% block body %}
+{% if current_user.is_authenticated %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4">Welcome to Knowledge Owner</h1>
+        <p class="lead">Hello {{ current_user.username }}.</p>
+    </div>
+</div>
+{% else %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4">Welcome to Knowledge Owner</h1>
+        <p class="lead">Safe solution for your knowledge!</p>
+    </div>
+</div>
+{% endif %}
+<div class="container">
+    <hr>
+    <div class="row row-cols-1 row-cols-md-3">
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 200px; object-fit: cover" src="../static/Server/resources/home/feature/knowledge.png" class="card-img-top"
+                    alt="Knowledge">
+                <div class="card-body">
+                    <h5 class="card-title">Knowledge</h5>
+                    <p class="card-text">
+                        Reading intellectual books is a great way to expand your knowledge and explore the world.
+                    </p>
+                </div>
+                <div class="card-footer" style="background-color: white">
+                    <a href="{{ url_for('list.list.library', page=1) }}" class="btn btn-primary">Read now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 200px; object-fit: cover" src="../static/Server/resources/home/feature/search.png" class="card-img-top"
+                    alt="Search">
+                <div class="card-body">
+                    <h5 class="card-title">Search</h5>
+                    <p class="card-text">
+                        Finding books of knowledge means discovering the excitement and depth of knowledge.
+                    </p>
+                </div>
+                <div class="card-footer" style="background-color: white">
+                    <a href="{{ url_for('list.list.library') }}" class="btn btn-primary">Search now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 200px; object-fit: cover" src="../static/Server/resources/home/feature/management.png" class="card-img-top"
+                    alt="Management">
+                <div class="card-body">
+                    <h5 class="card-title">Management</h5>
+                    <p class="card-text">
+                        Knowledge book management is a way to optimize the arrangement, storage and utilization of
+                        knowledge from your valuable books.
+                    </p>
+                </div>
+                <div class="card-footer" style="background-color: white">
+                    <a href="{{ url_for('list.list.list') }}" class="btn btn-primary">Manage now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row row-cols-1 row-cols-md-2" id="about">
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 350px; object-fit: cover" src="../static/Server/resources/home/about/explore.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <hr>
+                    <h5 class="card-title">Explore Diverse Knowledge</h5>
+                    <p class="card-text">
+                        We curate and provide a diverse range of books, including literature, science, self-help, history, and various genres. You will discover fascinating reads that unlock understanding and creativity in your daily life.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 350px; object-fit: cover" src="../static/Server/resources/home/about/personalized.jpg"
+                    class="card-img-top" alt="...">
+                <div class="card-body">
+                    <hr>
+                    <h5 class="card-title">Personalized Book Recommendations</h5>
+                    <p class="card-text">
+                        We understand that everyone has unique book preferences. Hence, we offer personalized book
+                        recommendations based on your interests and choices.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 350px; object-fit: cover" src="../static/Server/resources/home/about/knowledge_exchange.jpg"
+                    class="card-img-top" alt="...">
+                <div class="card-body">
+                    <hr>
+                    <h5 class="card-title">Foster a Sharing Environment</h5>
+                    <p class="card-text">
+                        We believe books extend beyond reading and into discussion and sharing. Book Website is where
+                        you can engage with the community, exchange thoughts, and explore fresh ideas.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img style="height: 350px; object-fit: cover" src="../static/Server/resources/home/about/achievement.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <hr>
+                    <h5 class="card-title">Honor Authors and Publications</h5>
+                    <p class="card-text">
+                        We respect the contributions of authors and publishers. Book Website will introduce you to the creative minds behind outstanding works and their exceptional publications.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

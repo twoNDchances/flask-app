@@ -1,0 +1,683 @@
+{% extends 'content.html' %}
+
+{% block title %}
+    <title>
+        Search Page - KnOwner
+    </title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <br>
+        <table style="margin: auto; max-width: fit-content;">
+            <tr>
+                <td>
+                    <h4>
+                        Results for
+                    </h4>
+                </td>
+                <td></td>
+                <td>
+                    <h4 style="color: red;">
+                        "{{ keyword }}"
+                    </h4>
+                </td>
+                <td>
+                    <h4>: <small>{{ users.__len__() }} found</small></h4>
+                </td>
+            </tr>
+        </table>
+        <div class="card-header">
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_book.search', keyword=keyword, filter='title', sort='increase', show='card') }}">Book</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active disabled">User</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <ul class="nav justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Filter option:</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='username', sort=sort) }}">Username</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='first_name', sort=sort) }}">First name</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='last_name', sort=sort) }}">Last name</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='phone', sort=sort) }}">Phone</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='email', sort=sort) }}">Email</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='address', sort=sort) }}">Address</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter='career', sort=sort) }}">Career</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="Second group">
+                    
+                </div>
+                <div class="input-group">
+                    <ul class="nav justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Sort:</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter=filter, sort='increase') }}">Increase</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('search.search_user.searchuser', keyword=keyword, filter=filter, sort='decrease') }}">Decrease</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <br>
+        {% if users.__len__() == 0 %}
+            <div class="text-center">
+                {% if filter in ['first_name', 'firstname', 'first name'] %}
+                    <h3 class="display-5 text-secondary">No result for first name filter</h3>
+                {% elif filter in ['last_name', 'lastname', 'last name'] %}
+                    <h3 class="display-5 text-secondary">No result for last name filter</h3>
+                {% elif filter == 'phone' %}
+                    <h3 class="display-5 text-secondary">Phone filter needs to be entered correctly!</h3>
+                {% elif filter == 'email' %}
+                    <h3 class="display-5 text-secondary">Email filter needs to be entered correctly!</h3>
+                {% else %}
+                    <h3 class="display-5 text-secondary">No result for {{ filter }} filter</h3>
+                {% endif %}
+            </div>
+        {% else %}
+            {% if filter == 'username' %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong><a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a></strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        {{ user.first_name }}
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong><a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a></strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        {{ user.first_name }}
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% elif filter in ['first_name', 'firstname', 'first name'] %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.first_name }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.first_name }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% elif filter in ['last_name', 'lastname', 'last name'] %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.last_name }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.first_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.last_name }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.first_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% elif filter == 'phone' %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.phone }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.phone }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% elif filter == 'email' %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.email }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.email }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% elif filter == 'address' %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.address }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.address }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% elif filter == 'career' %}
+                {% if selfs.__len__() > 0 %}
+                    <h4>You:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Career</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in selfs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;"></a>
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.career }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('show.showuser.profile', username=user.username) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('show.showuser.profile', username=user.username) }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <hr>
+                {% if others.__len__() > 0 %}
+                    <h4>Others:</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Career</th>
+                                <th scope="col">Uploaded</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Last name</th>
+                                <th scope="col">View Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in others %}
+                                <tr>
+                                    <td>
+                                        <img src="../{{ user.avatar.image[26:] }}" alt="Avatar of {{ user.username }}" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    </td>
+                                    <td>
+                                        <strong>{{ user.career }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ user.book.all().__len__() }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}">{{ user.username }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.last_name }}
+                                    </td>
+                                    <td>
+                                    <a href="{{ url_for('visit.user.visituser', username=user.username, show='card') }}"><img src="../static/Server/resources/book/view.png" alt="View button" height="20px"
+                                        width="20px"></a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

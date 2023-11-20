@@ -1,0 +1,101 @@
+{% extends 'content.html' %}
+{% block title %}
+    <title>
+        Library Page - KnOwner
+    </title>
+{% endblock %}
+
+{% block body %}
+    <!-- <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Welcome to your Library Management, {{ current_user.username }}!</h1>
+            <p class="lead">Where your own "Knowledge" is stored.</p>
+        </div>
+    </div> -->
+    <div class="container">
+        <hr>
+        <div class="card-header">
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                    <a class="btn btn-link" href="{{ url_for('list.list.library', page=1) }}">Your library</a>
+                    <a class="btn btn-link" href="{{ url_for('list.list.list') }}">List table</a>
+                </div>
+                <div class="input-group">
+                    <a class="btn btn-primary" href="{{ url_for('create.add.add') }}">Add more</a>
+                </div>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <div class="container">
+        {#    {% if session['message'] %}#}
+        {#    	<div class="alert alert-success text-center" role="alert">#}
+        {#            {{ session['message'] }}#}
+        {#        </div>#}
+        {#    {% endif %}#}
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-success text-center" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% if is_empty %}
+            <div class="text-center">
+                <h3 class="display-5 text-secondary">You have no books in your library!</h3>
+            </div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-md-3">
+                {% for book in books.items %}
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <img style="height: 300px; object-fit: cover" src="../{{ book.image.path[26:] }}" class="card-img-top" alt="{{ book.title }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ book.title }}</h5>
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>Author:</td>
+                                            <td>{{ book.author }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Release Year:</td>
+                                            <td>{{ book.release_year }}</td>
+                                        </tr>   
+                                    </tbody>
+                                </table>
+                                <a href="{{ url_for('show.showbook.view', key=encrypt(book.key, encryption_key)) }}" class="btn btn-primary">View</a>
+                                <a href="{{ url_for('update.updatebook.update_for_book', key=encrypt(book.key, encryption_key))}}" class="btn btn-success">Update</a>
+                                <a href="{{ url_for('delete.delete.delete_card', key=encrypt((book.key + 'c'), encryption_key)) }}" class="btn btn-danger">Delete</a>
+                            </div>
+                            <div class="card-footer">
+                                {% if ((now.now().year) - (book.created_at.year)) >= 1 %}
+                                    <small class="text-muted">Last updated {{ ((now.now().year) - (book.created_at.year)) }} years ago</small>
+                                {% elif ((now.now().month) - (book.created_at.month)) >= 1 and ((now.now().year) - (book.created_at.year)).year < 1 %}
+                                    <small class="text-muted">Last updated {{ ((now.now().month) - (book.created_at.month)) }} months ago</small>
+                                {% elif ((now.now().day) - (book.created_at.day)) >= 1 and ((now.now().month) - (book.created_at.month)) < 1%}
+                                    <small class="text-muted">Last updated {{ ((now.now().day) - (book.created_at.day)) }} days ago</small>
+                                {% elif ((now.now().hour) - (book.created_at.hour)) >= 1 and ((now.now().day) - (book.created_at.day)) < 1 %}
+                                    <small class="text-muted">Last updated {{ ((now.now().hour) - (book.created_at.hour)) }} hours ago</small>
+                                {% elif ((now.now().minute) - (book.created_at.minute)) >= 1 and ((now.now().hour) - (book.created_at.hour)) < 1 %}
+                                    <small class="text-muted">Last updated {{ ((now.now().minute) - (book.created_at.minute)) }} minutes ago</small>
+                                {% elif ((now.now().second) - (book.created_at.second)) >= 1 and ((now.now().minute) - (book.created_at.minute)) < 1 %}
+                                    <small class="text-muted">Last updated {{ ((now.now().second) - (book.created_at.second)) }} seconds ago</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% for number in books.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                {% if number %}
+                    {% if books.page == number %}
+                        <a class="btn btn-outline-secondary" href="{{ url_for('list.list.library', page=number) }}">{{ number }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-secondary" href="{{ url_for('list.list.library', page=number) }}">{{ number }}</a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
